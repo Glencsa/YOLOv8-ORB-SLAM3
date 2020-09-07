@@ -12,10 +12,10 @@ You can get the source code by git such as:
  git checkout master
 # ORB-SLAM3
 
-### V0.2: Beta version, 23 Jul 2020
-**Authors:** Carlos Campos, Richard Elvira, Juan J. Gómez, [José M. M. Montiel](http://webdiis.unizar.es/~josemari/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/).
-### V0.3: Beta version, 7 Aug 2020
+### V0.3: Beta version, 4 Sep 2020
 **Authors:** Carlos Campos, Richard Elvira, Juan J. Gómez Rodríguez, [José M. M. Montiel](http://webdiis.unizar.es/~josemari/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/).
+
+The [Changelog](https://github.com/UZ-SLAMLab/ORB_SLAM3/Changelog.md) describes the features of each version.
 
 ORB-SLAM3 is the first real-time SLAM library able to perform **Visual, Visual-Inertial and Multi-Map SLAM** with **monocular, stereo and RGB-D** cameras, using **pin-hole and fisheye** lens models. In all sensor configurations, ORB-SLAM3 is as robust as the best systems available in the literature, and significantly more accurate. 
 
