@@ -20,7 +20,7 @@
 #include<algorithm>
 #include<fstream>
 #include<chrono>
-
+#include "yolov8/yolov8_seg.h"
 #include<opencv2/core/core.hpp>
 
 #include<System.h>

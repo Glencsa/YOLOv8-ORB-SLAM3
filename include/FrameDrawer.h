@@ -51,7 +51,7 @@ public:
     cv::Mat DrawRightFrame(float imageScale=1.f);
 
     bool both;
-
+    vector<bool> is_badpoints;
 protected:
 
     void DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText);

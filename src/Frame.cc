@@ -25,7 +25,7 @@
 #include "Converter.h"
 #include "ORBmatcher.h"
 #include "GeometricCamera.h"
-
+#include "yolov8/yolov8_seg.h"
 #include <thread>
 #include <include/CameraModels/Pinhole.h>
 #include <include/CameraModels/KannalaBrandt8.h>
@@ -196,9 +196,12 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
 
     AssignFeaturesToGrid();
 }
+//改------------------------------
 
-Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeStamp, ORBextractor* extractor,ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth, GeometricCamera* pCamera,Frame* pPrevF, const IMU::Calib &ImuCalib)
-    :mpcpi(NULL),mpORBvocabulary(voc),mpORBextractorLeft(extractor),mpORBextractorRight(static_cast<ORBextractor*>(NULL)),
+
+
+Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeStamp, ORBextractor* extractor,ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth, GeometricCamera* pCamera,vector<OutputParams> result,const cv::Mat &im,Frame* pPrevF, const IMU::Calib &ImuCalib)
+    :mpcpi(NULL),obj_result(result),mpORBvocabulary(voc),mpORBextractorLeft(extractor),mpORBextractorRight(static_cast<ORBextractor*>(NULL)),
      mTimeStamp(timeStamp), mK(K.clone()), mK_(Converter::toMatrix3f(K)),mDistCoef(distCoef.clone()), mbf(bf), mThDepth(thDepth),
      mImuCalib(ImuCalib), mpImuPreintegrated(NULL), mpPrevFrame(pPrevF), mpImuPreintegratedFrame(NULL), mpReferenceKF(static_cast<KeyFrame*>(NULL)), mbIsSet(false), mbImuPreintegrated(false),
      mpCamera(pCamera),mpCamera2(nullptr), mbHasPose(false), mbHasVelocity(false)
@@ -219,7 +222,16 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
 #ifdef REGISTER_TIMES
     std::chrono::steady_clock::time_point time_StartExtORB = std::chrono::steady_clock::now();
 #endif
-    ExtractORB(0,imGray,0,0);
+    //ExtractORB(0,imGray,0,0);
+    string model_path_seg = "/home/glencs/code_file/yolov8n-seg.onnx";
+    cv::dnn::Net net;
+    Yolov8Seg*yolo = new Yolov8Seg; 
+    yolo->ReadModel(net, model_path_seg, false);
+    thread threadLeft(&Frame::ExtractORB,this,0,imGray,0,0);
+    //thread threadRight(&Yolov8Seg::Detect,yolo,std::ref(im),std::ref(net),std::ref(result));
+    threadLeft.join();
+    //threadRight.join();
+    // yolo->Detect(im,net,result);
 #ifdef REGISTER_TIMES
     std::chrono::steady_clock::time_point time_EndExtORB = std::chrono::steady_clock::now();
 
@@ -231,6 +243,52 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
 
     if(mvKeys.empty())
         return;
+    //改-------------------
+    for(int i =0;i<result.size();++i)
+    {
+        if(result[i].id !=0)
+        {
+            result.erase(result.begin()+i);
+            i--;
+        }
+    }
+    //基于mask的动态物体剔除
+
+
+    for(int k = 0;k<N;++k)
+    {
+        for(auto r:result)
+        {
+            //cout<<r.boxMask.at<uchar>(mvKeys[k].pt.y-r.box.y,mvKeys[k].pt.x-r.box.x)
+            int yr = mvKeys[k].pt.y-r.box.y;
+            int xr = mvKeys[k].pt.x-r.box.x;
+
+            if(yr>=0&&xr>=0&&yr<=r.box.height&&xr<=r.box.width&&r.boxMask.at<uchar>(yr,xr) ==255)
+            {
+                is_badpoints.push_back(true);
+                mvKeys[k] = cv::KeyPoint(-1,-1,-1);
+                
+            }   
+            else is_badpoints.push_back(false);
+        }
+    }
+
+
+
+    //基于box的动态特征点剔除
+    // for(int k =0;k<N;++k)
+    // {
+    //     for(auto r:result)
+    //     {
+    //         int xp = mvKeys[k].pt.x;
+    //         int yp = mvKeys[k].pt.y;
+    //         if(xp>r.box.x&&xp<(r.box.x+r.box.width)&&yp>r.box.y&&yp<(r.box.height))
+    //         mvKeys[k] = cv::KeyPoint(-1,-1,-1);
+    //     }
+    // }
+    
+
+
 
     UndistortKeyPoints();
 
@@ -993,7 +1051,8 @@ void Frame::ComputeStereoFromRGBD(const cv::Mat &imDepth)
 
         const float &v = kp.pt.y;
         const float &u = kp.pt.x;
-
+        if(v<0||u<0)
+            continue;
         const float d = imDepth.at<float>(v,u);
 
         if(d>0)

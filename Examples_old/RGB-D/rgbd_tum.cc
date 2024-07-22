@@ -20,7 +20,7 @@
 #include<algorithm>
 #include<fstream>
 #include<chrono>
-
+#include"yolov8/yolov8_seg.h"
 #include<opencv2/core/core.hpp>
 
 #include<System.h>
@@ -69,6 +69,26 @@ int main(int argc, char **argv)
     cout << endl << "-------" << endl;
     cout << "Start processing sequence ..." << endl;
     cout << "Images in the sequence: " << nImages << endl << endl;
+    //改------------------------------
+    //
+    //
+    //
+
+    string model_path_seg = "/home/glencs/code_file/yolov8s-seg.onnx";
+    cv::dnn::Net net;
+    Yolov8Seg yolo; 
+	if (yolo.ReadModel(net, model_path_seg, false)) {
+		std::cout << "read net ok!" << std::endl;
+	}
+	else {
+		return -1;
+	}
+
+
+
+
+
+
 
     // Main loop
     cv::Mat imRGB, imD;
@@ -93,6 +113,23 @@ int main(int argc, char **argv)
             cv::resize(imRGB, imRGB, cv::Size(width, height));
             cv::resize(imD, imD, cv::Size(width, height));
         }
+        //改---------------
+         vector<OutputParams> result;
+         //yolo.Detect(imRGB,net,result);
+        // cout<<result[0].boxMask.rows<<"    "<<result[0].boxMask.cols<<endl;
+        // cout<<"------------------------------------------"<<endl;
+        // cout<<result[0].box.width<<"    "<<result[0].box.height<<endl;
+        // cout<<result[0].box.y<<"    "<<result[0].box.x<<endl;
+        // cout<<imRGB.rows<<"    "<<imRGB.cols<<endl;
+	    //vector<cv::Mat> mask_result;
+    	// for(int i = 0;i<result.size();++i)
+        // {
+        //     if(result[i].id ==0)
+        //     {
+        //         mask_result.push_back(result[i].boxMask);
+        //     }
+        // }
+
 
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
@@ -101,7 +138,7 @@ int main(int argc, char **argv)
 #endif
 
         // Pass the image to the SLAM system
-        SLAM.TrackRGBD(imRGB,imD,tframe);
+        SLAM.TrackRGBD(imRGB,imD,tframe,result);
 
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
