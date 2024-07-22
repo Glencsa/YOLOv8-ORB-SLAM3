@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ORB-SLAM3
 
 ### V1.0, December 22th, 2021
@@ -233,3 +234,7 @@ A flag in `include\Config.h` activates time measurements. It is necessary to unc
 
 # 9. Calibration
 You can find a tutorial for visual-inertial calibration and a detailed description of the contents of valid configuration files at  `Calibration_Tutorial.pdf`
+=======
+# YOLOv8-ORB-SLAM3
+YOLOv8-ORB-SLAM3: Semantic SLAM with dynamic feature point removal
+>>>>>>> yolo_orb_slam/main
