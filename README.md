@@ -10,6 +10,7 @@ You can get the source code by git such as:
  git clone https://github.com/Glencsa/YOLOv8-ORB-SLAM3.git
 
  git checkout master
+We use the yolov8 to segment the dynamic people, and then remove all the dynamic feature points on the people.
 # ORB-SLAM3
 
 ### V1.0, December 22th, 2021
