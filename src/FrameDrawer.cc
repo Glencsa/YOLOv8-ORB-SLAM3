@@ -177,6 +177,9 @@ cv::Mat FrameDrawer::DrawFrame(float imageScale)
                     pt2.x=vCurrentKeys[i].pt.x+r;
                     pt2.y=vCurrentKeys[i].pt.y+r;
                 }
+                //改---------------------
+
+
 
                 // This is a match to a MapPoint in the map
                 if(vbMap[i])
@@ -191,6 +194,17 @@ cv::Mat FrameDrawer::DrawFrame(float imageScale)
                     cv::circle(im,point,2,odometryColor,-1);
                     mnTrackedVO++;
                 }
+                
+                // if(is_badpoints[i]){//把位于动态物体框内的特征点标红
+                //     cv::rectangle(im,pt1,pt2,cv::Scalar(0,0,200));
+                //     cv::circle(im,vCurrentKeys[i].pt,1,cv::Scalar(0,0,200),-1);
+                //     mnTracked++;
+                // }
+                // else{
+                //     cv::rectangle(im,pt1,pt2,cv::Scalar(0,255,0));
+                //     cv::circle(im,vCurrentKeys[i].pt,1,cv::Scalar(0,255,0),-1);
+                //     mnTracked++;
+                // }
             }
         }
     }
@@ -374,7 +388,7 @@ void FrameDrawer::Update(Tracking *pTracker)
     mvCurrentKeys=pTracker->mCurrentFrame.mvKeys;
     mThDepth = pTracker->mCurrentFrame.mThDepth;
     mvCurrentDepth = pTracker->mCurrentFrame.mvDepth;
-
+    is_badpoints = pTracker->mCurrentFrame.is_badpoints;
     if(both){
         mvCurrentKeysRight = pTracker->mCurrentFrame.mvKeysRight;
         pTracker->mImRight.copyTo(mImRight);

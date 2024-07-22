@@ -32,6 +32,7 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
+#include "yolov8/yolov8_seg.h"
 
 namespace ORB_SLAM3
 {
@@ -75,6 +76,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     }
 
     cv::FileNode node = fsSettings["File.version"];
+    cout<<"配置文件版本号："<<node.string()<<endl;
     if(!node.empty() && node.isString() && node.string() == "1.0"){
         settings_ = new Settings(strSettingsFile,mSensor);
 
@@ -212,7 +214,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     // mSensor!=MONOCULAR && mSensor!=IMU_MONOCULAR
     mpLoopCloser = new LoopClosing(mpAtlas, mpKeyFrameDatabase, mpVocabulary, mSensor!=MONOCULAR, activeLC); // mSensor!=MONOCULAR);
     mptLoopClosing = new thread(&ORB_SLAM3::LoopClosing::Run, mpLoopCloser);
-
+    
     //Set pointers between threads
     mpTracker->SetLocalMapper(mpLocalMapper);
     mpTracker->SetLoopClosing(mpLoopCloser);
@@ -325,7 +327,7 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
     return Tcw;
 }
 
-Sophus::SE3f System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp, const vector<IMU::Point>& vImuMeas, string filename)
+Sophus::SE3f System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp,vector<OutputParams> result, const vector<IMU::Point>& vImuMeas, string filename)
 {
     if(mSensor!=RGBD  && mSensor!=IMU_RGBD)
     {
@@ -387,7 +389,7 @@ Sophus::SE3f System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const
         for(size_t i_imu = 0; i_imu < vImuMeas.size(); i_imu++)
             mpTracker->GrabImuData(vImuMeas[i_imu]);
 
-    Sophus::SE3f Tcw = mpTracker->GrabImageRGBD(imToFeed,imDepthToFeed,timestamp,filename);
+    Sophus::SE3f Tcw = mpTracker->GrabImageRGBD(imToFeed,imDepthToFeed,timestamp,filename,result,im);
 
     unique_lock<mutex> lock2(mMutexState);
     mTrackingState = mpTracker->mState;
@@ -414,7 +416,9 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im, const double &timestamp, 
     cv::Mat imToFeed = im.clone();
     if(settings_ && settings_->needToResize()){
         cv::Mat resizedIm;
+        cout<<"这里没问题"<<endl;
         cv::resize(im,resizedIm,settings_->newImSize());
+        cout<<"这里有问题！！！"<<endl;
         imToFeed = resizedIm;
     }
 
