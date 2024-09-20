@@ -9,8 +9,20 @@ You can get the source code by git such as:
 
  git clone https://github.com/Glencsa/YOLOv8-ORB-SLAM3.git
 
- git checkout master
 We use the yolov8 to segment the dynamic people, and then remove all the dynamic feature points on the people.
+
+Our result as below:
+
+![流程图](image1.png);
+
+segment results 
+![分割结果](image2.png);
+
+removal of the dynamic feature point:
+
+![动态特征点剔除](image3.png);
+
+
 # ORB-SLAM3
 
 ### V1.0, December 22th, 2021
@@ -246,5 +258,5 @@ A flag in `include\Config.h` activates time measurements. It is necessary to unc
 
 # 9. Calibration
 You can find a tutorial for visual-inertial calibration and a detailed description of the contents of valid configuration files at  `Calibration_Tutorial.pdf`
-=======
+
 
