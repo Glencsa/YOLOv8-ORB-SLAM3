@@ -1,8 +1,7 @@
 # YOLOv8-ORB-SLAM3
 YOLOv8-ORB-SLAM3: Semantic SLAM with dynamic feature point removal
 
-You can see the source code in the branch master. You can get it by cloning the branch master.
-
+You can see the source code in the branch master and you can get it by cloning the branch master.
 
 The branch 'main' doesn't have anything but Readme.md.
 You can get the source code by git such as:
@@ -22,7 +21,7 @@ removal of the dynamic feature point:
 
 ![动态特征点剔除](image3.png);
 
-
+This project is the product of my undergraduate thesis, which explains in detail the implementation process of the project(The thesis are [here](./HFUT_Thesis.pdf)).
 # ORB-SLAM3
 
 ### V1.0, December 22th, 2021
