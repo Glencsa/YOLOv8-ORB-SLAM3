@@ -12,14 +12,22 @@ We use the yolov8 to segment the dynamic people, and then remove all the dynamic
 
 Our result as below:
 
-![流程图](image1.png);
+![流程图](image1.png)
 
 segment results 
-![分割结果](image2.png);
+![分割结果](image2.png)
+
+some results:
+
+![分割结果](image4.png)
+
+![分割结果](image5.png)
+
+![分割结果](image6.png)
 
 removal of the dynamic feature point:
 
-![动态特征点剔除](image3.png);
+![动态特征点剔除](image3.png)
 
 This project is the product of my undergraduate thesis, which explains in detail the implementation process of the project(The thesis are [here](./HFUT_Thesis.pdf)).
 # ORB-SLAM3
